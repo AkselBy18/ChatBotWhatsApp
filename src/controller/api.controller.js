@@ -26,10 +26,15 @@ const recive = (req, res) => {
         if(messages) {
             const message = messages[0];
             const number = message.from;
-            const text = message.text.body;
-            serviceMessage.sendMessageTo(text, number);
-            res.send("EVENT_RECEIVED");
+            if(message.type == "text") {
+                const text = message.text.body;
+                serviceMessage.sendMessageTo(text, number);
+            } else {
+                const replyData = message.interactive.button_reply;
+                serviceMessage.responseButtons(replyData, number);
+            }
         }
+        res.send("EVENT_RECEIVED");
     } catch (error) {
         console.log("Controller error:", JSON.stringify(error));
         res.send("EVENT_RECEIVED");
